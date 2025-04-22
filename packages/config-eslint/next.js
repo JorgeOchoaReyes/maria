@@ -32,7 +32,11 @@ export const config = [
     },
     rules: {
       ...pluginNext.configs.recommended.rules,
-      ...pluginNext.configs["core-web-vitals"].rules,
+      ...pluginNext.configs["core-web-vitals"].rules, 
+      "turbo/no-undeclared-env-vars": "warn", 
+      indent: ["error", 2, { SwitchCase: 1 }],
+      quotes: [2, "double"],
+      semi: [2, "always"]   
     },
   },
   {

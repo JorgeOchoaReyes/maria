@@ -1,5 +1,5 @@
 {
-  "name": "kitchen-sink",
+  "name": "maria",
   "private": true,
   "scripts": {
     "build": "turbo run build",
