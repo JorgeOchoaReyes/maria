@@ -36,32 +36,50 @@ export const useChat = () => {
     setLoading(true);
     setError(null);
     try {
-      event.current = new EventSource(`${apiUrl}/chat?prompt=${message}`);  
-      console.log("EventSource created:", event.current);
+      event.current = new EventSource(`${apiUrl}/chat?prompt=${message}`);   
       event.current.onopen = () => {
         setLoading(true);
-      }; 
-      event.current.onerror = (e) => {
-        alert("An error occurred while fetching data.");
-        setLoading(false); 
-        console.log("error");
-        event.current?.close();
-      };
-      
+      };  
       event.current.onmessage = (e) => {  
         const data = e.data;     
+        if (data === "[DONE]") {
+          setLoading(false);
+          event.current?.close();
+          return;
+        } else { 
+          setCurrentChat((prevChat) => {
+            const updatedMessages = prevChat.messages.map((msg) => {
+              if (msg.id === currentId) {
+                return {
+                  ...msg,
+                  content: msg.content + data,
+                };
+              }
+              return msg;
+            });
+            return {
+              ...prevChat,
+              messages: updatedMessages,
+            };
+          });
+        }
+      }; 
+
+      event.current.onerror = (e) => { 
+        setLoading(false); 
+        event.current?.close();
       };
+
     } catch (err) {
-      console.error("Error:", err);
-      alert("An error occurred while sending the message.");
+      console.error("Error:", err); 
       setLoading(false);
       event.current?.close();
     }  
     setLoading(false);
   }; 
 
-  useEffect(() => {
-    if(event.current) {
+  useEffect(() => { 
+    if (event.current) {
       event.current.close();
     }
   }, []);

@@ -10,8 +10,8 @@ export const LLMChat:React.FC = () => {
   const { sendMessage, chats, setChats, currentChat, setCurrentChat, loading } = useChat();  
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [inputValue, setInputValue] = useState(""); 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,6 +49,7 @@ export const LLMChat:React.FC = () => {
 
     setCurrentChat(chatWithAssistantMessage);
     setChats(chats.map((chat) => (chat.id === currentChat.id ? chatWithAssistantMessage : chat)));
+    setTypingMessageId(assistantMessageId);
 
     try {  
       await sendMessage(inputValue, assistantMessageId); 
@@ -73,7 +74,7 @@ export const LLMChat:React.FC = () => {
         };
 
         setChats((prevChats) => prevChats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
-
+        setTypingMessageId(null);
         return updatedChat;
       });
  
@@ -133,7 +134,7 @@ export const LLMChat:React.FC = () => {
           ) : (
             <div className="space-y-4 pb-20">
               {currentChat.messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
+                <ChatMessage key={message.id} message={message} isTyping={message.id === typingMessageId} />
               ))}
               {loading && (
                 <div className="flex items-center space-x-2">

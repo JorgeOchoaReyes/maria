@@ -19,19 +19,16 @@ export const chatSSE = async (req: Request, res: Response) => {
   const stream = await geminiMdeol.generateContentStream(prompt); 
 
   for await (const chunk of stream.stream) {
-    if (chunk.text) {  
-      console.log("Received chunk:", chunk.text());
-      res.write(chunk.text() + "\n");
-    }  
+    if (chunk.text) {   
+      res.write("data: " + chunk.text() + "\n");
+    } 
   }
-
-  
-  
+  res.write("data: [DONE]\n\n");
+  res.end();
+ 
   res.on("close", () => {
     console.log("Connection closed by client");
-    res.end();
-  });  
-
-  res.end();
+    res.end(); 
+  });   
 
 };

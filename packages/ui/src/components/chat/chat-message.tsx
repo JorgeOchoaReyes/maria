@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { cn } from "../../lib/utils"
 import { Avatar } from "../../components/ui/avatar"
 import { Bot, Check, Copy, User } from "lucide-react"
@@ -16,10 +16,16 @@ type Message = {
 
 interface ChatMessageProps {
   message: Message
+  isTyping?: boolean
+  typingSpeed?: number
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, isTyping = false, typingSpeed = 10 }: ChatMessageProps) {
   const isUser = message.role === "user"
+  const [displayedContent, setDisplayedContent] = useState("")
+  const [isComplete, setIsComplete] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const contentRef = useRef(message.content)
  
   const processMessageContent = (content: string) => { 
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
@@ -61,8 +67,33 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
     return parts
   }
+ 
+  useEffect(() => { 
+    if (contentRef.current !== message.content) {
+      contentRef.current = message.content
+      setDisplayedContent("")
+      setCurrentIndex(0)
+      setIsComplete(false)
+    }
+ 
+    if (!isUser && isTyping && !isComplete && message.content) {
+      const timer = setTimeout(() => {
+        if (currentIndex < message.content.length) {
+          setDisplayedContent((prev) => prev + message.content[currentIndex])
+          setCurrentIndex((prev) => prev + 1)
+        } else {
+          setIsComplete(true)
+        }
+      }, typingSpeed)
 
-  const messageParts = processMessageContent(message.content)
+      return () => clearTimeout(timer)
+    }
+  }, [isUser, isTyping, message.content, currentIndex, isComplete, typingSpeed])
+ 
+  const contentToProcess = !isUser && isTyping && !isComplete ? displayedContent : message.content
+  const messageParts = processMessageContent(contentToProcess)
+ 
+  const showCursor = !isUser && isTyping && !isComplete
 
   return (
     <div className={cn("flex items-start gap-4 rounded-lg p-4", isUser ? "bg-muted/50" : "bg-background")}>
@@ -77,6 +108,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
               return (
                 <div key={index} className="whitespace-pre-wrap">
                   {part.content}
+                  {showCursor && index === messageParts.length - 1 && <span className="typing-cursor">|</span>}
                 </div>
               )
             } else if (part.type === "code") {
