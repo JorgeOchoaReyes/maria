@@ -1,9 +1,9 @@
-"use client"
-import { ChevronLeft, ChevronRight, MessageSquare, Plus, Trash } from "lucide-react" 
-import { cn } from "@repo/ui/lib/utils"
-import { Button } from "@repo/ui/components/ui/button"
-import { ScrollArea } from "@repo/ui/components/ui/scroll-area"
-import { motion } from "framer-motion"
+ 
+import { ChevronLeft, ChevronRight, MessageSquare, Plus, Trash } from "lucide-react"; 
+import { cn } from "@repo/ui/lib/utils";
+import { Button } from "@repo/ui/components/ui/button";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { motion } from "framer-motion";
 
 type Message = {
   id: string
@@ -22,7 +22,7 @@ interface SidebarProps {
   currentChat: Chat
   onSelectChat: (chat: Chat) => void
   onNewChat: () => void
-  onDeleteChat: (chatId: string) => void
+  onDeleteChat: (chatId: string) => void 
   isOpen: boolean
   setIsOpen: (open: boolean) => void
 }
@@ -84,8 +84,8 @@ export function Sidebar({
                     size="icon"
                     className="h-6 w-6 opacity-0 group-hover:opacity-100"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      onDeleteChat(chat.id)
+                      e.stopPropagation();
+                      onDeleteChat(chat.id);
                     }}
                   >
                     <Trash className="h-3 w-3" />
@@ -104,5 +104,5 @@ export function Sidebar({
         />
       )}
     </>
-  )
+  );
 }

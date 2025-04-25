@@ -1,11 +1,8 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@repo/ui/lib/utils";
 import { Avatar } from "@repo/ui/components/ui/avatar";
-import { Bot, Check, Copy, User } from "lucide-react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Bot, CheckIcon, CopyIcon, User } from "lucide-react"; 
+import { CodeBlock, dracula, } from "react-code-blocks";
 import { Button } from "@repo/ui/components/ui/button";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -116,7 +113,7 @@ export function ChatMessage({ message, isTyping = false, typingSpeed = 1 }: Chat
                 </div>
               );
             } else if (part.type === "code") {
-              return <CodeBlock key={index} code={part.content} language={part.language ?? "js"} />;
+              return <CodeDisplayBlock key={index} code={part.content} lang={part.language ?? "js"} />;
             }
             return null;
           })}
@@ -126,40 +123,45 @@ export function ChatMessage({ message, isTyping = false, typingSpeed = 1 }: Chat
   );
 }
 
-function CodeBlock({ code, language }: { code: string; language: string }) {
-  const [copied, setCopied] = useState(false);
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+interface ButtonCodeblockProps {
+  code: string;
+  lang: string;
+  _theme?: string;
+}
+
+function CodeDisplayBlock({ code, lang, _theme }: ButtonCodeblockProps) {
+  const [isCopied, setisCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    await navigator?.clipboard?.writeText(code);
+    setisCopied(true); 
+    setTimeout(() => {
+      setisCopied(false);
+    }, 1500);
   };
 
   return (
-    <div className="relative my-4 rounded-md bg-zinc-950">
-      <div className="flex items-center justify-between rounded-t-md bg-zinc-800 px-4 py-2">
-        <span className="text-xs text-zinc-400">{language}</span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-zinc-400 hover:text-zinc-100"
-          onClick={copyToClipboard}
-        >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-          <span className="sr-only">Copy code</span>
-        </Button>
-      </div>
-      <SyntaxHighlighter
-        language={language}
-        style={vscDarkPlus}
-        customStyle={{
-          margin: 0,
-          borderRadius: "0 0 0.375rem 0.375rem",
-          padding: "1rem",
-        }}
+    <div className="relative flex flex-col text-start">
+      <Button
+        onClick={copyToClipboard}
+        variant="ghost"
+        size="icon"
+        className="h-5 w-5 absolute top-2 right-2"
       >
-        {code}
-      </SyntaxHighlighter>
+        {isCopied ? (
+          <CheckIcon className="w-4 h-4 scale-100 transition-all" />
+        ) : (
+          <CopyIcon className="w-4 h-4 scale-100 transition-all" />
+        )}
+      </Button>
+      <CodeBlock
+        customStyle={  { background: "#303033" } }
+        text={code}
+        language="tsx"
+        showLineNumbers={false}
+        theme={ dracula }
+      />
     </div>
   );
 }
