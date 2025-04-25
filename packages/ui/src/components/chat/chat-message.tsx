@@ -20,45 +20,38 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user"
-
-  // Process message content to identify code blocks
-  const processMessageContent = (content: string) => {
-    // Regular expression to match markdown code blocks
+ 
+  const processMessageContent = (content: string) => { 
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
 
     const parts = []
     let lastIndex = 0
     let match
-
-    // Find all code blocks in the message
-    while ((match = codeBlockRegex.exec(content)) !== null) {
-      // Add text before the code block
+ 
+    while ((match = codeBlockRegex.exec(content)) !== null) { 
       if (match.index > lastIndex) {
         parts.push({
           type: "text",
           content: content.slice(lastIndex, match.index),
         })
       }
-
-      // Add the code block
+ 
       parts.push({
         type: "code",
-        language: match[1] || "javascript", // Default to javascript if language not specified
+        language: match[1] || "javascript",  
         content: match[2].trim(),
       })
 
       lastIndex = match.index + match[0].length
     }
-
-    // Add any remaining text after the last code block
+ 
     if (lastIndex < content.length) {
       parts.push({
         type: "text",
         content: content.slice(lastIndex),
       })
     }
-
-    // If no code blocks were found, return the entire content as text
+ 
     if (parts.length === 0) {
       parts.push({
         type: "text",
