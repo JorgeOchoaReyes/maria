@@ -32,7 +32,6 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.9.1",
     "lucide-react": "^0.451.0",
-    "react-syntax-highlighter": "^15.6.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },

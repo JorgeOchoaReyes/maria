@@ -1,8 +1,8 @@
 "use client"
 import { ChevronLeft, ChevronRight, MessageSquare, Plus, Trash } from "lucide-react" 
-import { cn } from "../../lib/utils"
-import { Button } from "../ui/button"
-import { ScrollArea } from "../ui/scroll-area"
+import { cn } from "@repo/ui/lib/utils"
+import { Button } from "@repo/ui/components/ui/button"
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area"
 import { motion } from "framer-motion"
 
 type Message = {

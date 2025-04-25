@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react"; 
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
-import { Sidebar } from "@repo/ui/components/chat/sidebar";
-import { ChatMessage } from "@repo/ui/components/chat/chat-message";
+import { Sidebar } from "../chat/sidebar";
+import { ChatMessage } from "../chat/chat-message";
 import { Loader2 } from "lucide-react"; 
 import { useChat, type Message, type Chat } from "@/hooks/use-chat"; 
  

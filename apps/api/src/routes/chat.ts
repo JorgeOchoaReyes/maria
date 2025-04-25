@@ -15,6 +15,7 @@ export const chatSSE = async (req: Request, res: Response) => {
   const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
   const geminiMdeol = gemini.getGenerativeModel({
     model: "gemini-1.5-flash", 
+    systemInstruction: "You are a general purpose code agent, if you need to generate code .",
   });   
   const stream = await geminiMdeol.generateContentStream(prompt); 
 
@@ -23,6 +24,7 @@ export const chatSSE = async (req: Request, res: Response) => {
       res.write("data: " + chunk.text() + "\n\n");
     } 
   }
+  
   res.write("data: [DONE]\n\n");
   res.end();
  
