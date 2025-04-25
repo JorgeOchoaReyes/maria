@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useChat, type Message, type Chat } from "@/hooks/use-chat"; 
  
 export const LLMChat:React.FC = () => {
-  const { sendMessage, chats, setChats, currentChat, setCurrentChat, loading } = useChat();  
+  const { sendMessage, chats, setChats, currentChat, setCurrentChat, loading, streaming } = useChat();  
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [inputValue, setInputValue] = useState(""); 
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
@@ -133,10 +133,11 @@ export const LLMChat:React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4 pb-20">
-              {currentChat.messages.map((message) => (
-                <ChatMessage key={message.id} message={message} isTyping={message.id === typingMessageId} />
-              ))}
-              {loading && (
+              {currentChat.messages.map((message) => {
+                if(message.id === typingMessageId && streaming) return;
+                return <ChatMessage key={message.id} message={message} isTyping={message.id === typingMessageId} />;
+              })}
+              {streaming && (
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   <span className="text-sm text-muted-foreground">AI is thinking...</span>

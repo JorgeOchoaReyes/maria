@@ -16,6 +16,8 @@ export type Chat = {
 
 export const useChat = () => {
   const [loading, setLoading] = React.useState(false); 
+  const [streaming, setStreaming] = React.useState(false);
+
   const [error, setError] = React.useState<string | null>(null);
   const [currentChat, setCurrentChat] = React.useState<Chat>({
     id: "1",
@@ -45,8 +47,10 @@ export const useChat = () => {
         if (data === "[DONE]") {
           setLoading(false);
           event.current?.close();
+          setStreaming(() => false);
           return;
         } else { 
+          setStreaming(() => true);
           setCurrentChat((prevChat) => {
             const updatedMessages = prevChat.messages.map((msg) => {
               if (msg.id === currentId) {
@@ -91,6 +95,7 @@ export const useChat = () => {
     setCurrentChat,
     currentChat,
     chats,
+    streaming,
     setChats,
   };
 };

@@ -20,7 +20,7 @@ interface ChatMessageProps {
   typingSpeed?: number
 }
 
-export function ChatMessage({ message, isTyping = false, typingSpeed = 10 }: ChatMessageProps) {
+export function ChatMessage({ message, isTyping = false, typingSpeed = 1 }: ChatMessageProps) {
   const isUser = message.role === "user"
   const [displayedContent, setDisplayedContent] = useState("")
   const [isComplete, setIsComplete] = useState(false)

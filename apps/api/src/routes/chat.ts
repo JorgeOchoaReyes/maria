@@ -20,7 +20,7 @@ export const chatSSE = async (req: Request, res: Response) => {
 
   for await (const chunk of stream.stream) {
     if (chunk.text) {   
-      res.write("data: " + chunk.text() + "\n");
+      res.write("data: " + chunk.text() + "\n\n");
     } 
   }
   res.write("data: [DONE]\n\n");
