@@ -4,25 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@types/node':
-      specifier: ^20
-      version: 20.17.30
-    lucide-react:
-      specifier: ^0.451.0
-      version: 0.451.0
-    tailwindcss:
-      specifier: ^3.4.13
-      version: 3.4.17
-    typescript:
-      specifier: ^5.6.3
-      version: 5.8.2
-  react18:
-    '@types/react':
-      specifier: ^18.3.11
-      version: 18.3.18
-
 importers:
 
   .:
@@ -156,10 +137,10 @@ importers:
         specifier: 15.3.1
         version: 15.3.1(eslint@9.25.0(jiti@2.4.2))(typescript@5.8.2)
       tailwindcss:
-        specifier: 'catalog:'
+        specifier: ^3.4.13
         version: 3.4.17
       typescript:
-        specifier: 'catalog:'
+        specifier: ^5.6.3
         version: 5.8.2
 
   packages/config-eslint:
@@ -285,7 +266,7 @@ importers:
         specifier: ^12.9.1
         version: 12.9.1(react-dom@19.1.0(react@18.3.1))(react@18.3.1)
       lucide-react:
-        specifier: 'catalog:'
+        specifier: ^0.451.0
         version: 0.451.0(react@18.3.1)
       react:
         specifier: ^18
@@ -307,10 +288,10 @@ importers:
         specifier: workspace:*
         version: link:../config-typescript
       '@types/node':
-        specifier: 'catalog:'
+        specifier: ^20
         version: 20.17.30
       '@types/react':
-        specifier: catalog:react18
+        specifier: ^18.3.11
         version: 18.3.18
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
@@ -325,10 +306,10 @@ importers:
         specifier: ^6
         version: 6.0.1(jiti@2.4.2)(postcss@8.5.3)(yaml@2.7.0)
       tailwindcss:
-        specifier: 'catalog:'
+        specifier: ^3.4.13
         version: 3.4.17
       typescript:
-        specifier: 'catalog:'
+        specifier: ^5.6.3
         version: 5.8.2
 
 packages:
