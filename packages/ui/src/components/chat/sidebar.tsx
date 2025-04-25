@@ -96,8 +96,7 @@ export function Sidebar({
             ))}
           </div>
         </ScrollArea>
-      </motion.div>
-      {/* Mobile overlay */}
+      </motion.div> 
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
