@@ -1,54 +1,25 @@
-"use client";
-
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react"; 
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
-import { Sidebar } from "@repo/ui/components/chat/sidebar";
-import { ChatMessage } from "@repo/ui/components/chat/chat-message";
+import { Sidebar } from "../chat/sidebar";
+import { ChatMessage } from "../chat/chat-message";
 import { Loader2 } from "lucide-react"; 
-
-type Message = {
-  id: string
-  content: string
-  role: "user" | "assistant"
-}
-
-type Chat = {
-  id: string
-  title: string
-  messages: Message[]
-}
-
-export function Chat() {
-  const router = useRouter();
+import { useChat, type Message, type Chat } from "@/hooks/use-chat"; 
+ 
+export const LLMChat:React.FC = () => {
+  const { sendMessage, chats, setChats, currentChat, setCurrentChat, loading, streaming } = useChat();  
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [inputValue, setInputValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentChat, setCurrentChat] = useState<Chat>({
-    id: "1",
-    title: "New conversation",
-    messages: [],
-  });
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "New conversation",
-      messages: [],
-    },
-  ]);
+  const [inputValue, setInputValue] = useState(""); 
+  const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null); 
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentChat.messages]);
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
-
-    // Add user message
+ 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue,
@@ -62,11 +33,8 @@ export function Chat() {
 
     setCurrentChat(updatedChat);
     setChats(chats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
-    setInputValue("");
-    setIsLoading(true);
-    setIsStreaming(true);
+    setInputValue(""); 
 
-    // Create a placeholder for the assistant's response
     const assistantMessageId = (Date.now() + 1).toString();
     const assistantMessage: Message = {
       id: assistantMessageId,
@@ -81,26 +49,20 @@ export function Chat() {
 
     setCurrentChat(chatWithAssistantMessage);
     setChats(chats.map((chat) => (chat.id === currentChat.id ? chatWithAssistantMessage : chat)));
+    setTypingMessageId(assistantMessageId);
 
-    try {
-      // Prepare the prompt from conversation history
-      const conversationHistory = updatedChat.messages
-        .map((msg) => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`)
-        .join("\n\n");
-
-      const prompt = `${conversationHistory}\n\nUser: ${userMessage.content}\n\nAssistant:`;
- 
+    try {  
+      await sendMessage(inputValue, assistantMessageId); 
  
     } catch (error) {
       console.error("Error streaming response:", error);
-
-      // Update the assistant message to show the error
+ 
       setCurrentChat((prevChat) => {
         const updatedMessages = prevChat.messages.map((msg) => {
           if (msg.id === assistantMessageId) {
             return {
               ...msg,
-              content: "I'm sorry, there was an error generating a response. Please try again.",
+              content: "Error occured. Please try again.",
             };
           }
           return msg;
@@ -112,12 +74,10 @@ export function Chat() {
         };
 
         setChats((prevChats) => prevChats.map((chat) => (chat.id === currentChat.id ? updatedChat : chat)));
-
+        setTypingMessageId(null);
         return updatedChat;
       });
-
-      setIsLoading(false);
-      setIsStreaming(false);
+ 
     }
   };
 
@@ -149,8 +109,7 @@ export function Chat() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
+    <div className="flex h-screen overflow-hidden"> 
       <Sidebar
         chats={chats}
         currentChat={currentChat}
@@ -160,8 +119,7 @@ export function Chat() {
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
       />
-
-      {/* Main content */}
+ 
       <div className="flex flex-1 flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           {currentChat.messages.length === 0 ? (
@@ -175,10 +133,11 @@ export function Chat() {
             </div>
           ) : (
             <div className="space-y-4 pb-20">
-              {currentChat.messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-              {isStreaming && (
+              {currentChat.messages.map((message) => {
+                if(message.id === typingMessageId && streaming) return;
+                return <ChatMessage key={message.id} message={message} isTyping={message.id === typingMessageId} />;
+              })}
+              {streaming && (
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   <span className="text-sm text-muted-foreground">AI is thinking...</span>
@@ -188,8 +147,7 @@ export function Chat() {
             </div>
           )}
         </div>
-
-        {/* Input area */}
+ 
         <div className="border-t bg-background p-4">
           <div className="mx-auto flex max-w-3xl items-center space-x-2">
             <Input
@@ -197,7 +155,7 @@ export function Chat() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Type your message..."
               className="flex-1"
-              disabled={isLoading}
+              disabled={loading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -205,12 +163,12 @@ export function Chat() {
                 }
               }}
             />
-            <Button onClick={handleSend} disabled={!inputValue.trim() || isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
+            <Button onClick={handleSend} disabled={!inputValue.trim() || loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
             </Button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};

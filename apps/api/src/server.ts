@@ -3,6 +3,7 @@ import express, { type Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { db } from "@repo/firebase-admin";
+import { chatSSE } from "./routes/chat";
 
 export const createServer = (): Express => {
   const app = express();
@@ -12,6 +13,7 @@ export const createServer = (): Express => {
     .use(urlencoded({ extended: true }))
     .use(json())
     .use(cors())
+    .get("/chat", chatSSE)
     .get("/message/:name", (req, res) => {
       return res.json({ message: `hello ${req.params.name}` });
     })

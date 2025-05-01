@@ -1,12 +1,10 @@
-import Image from "next/image"; 
-import { Chat } from "@/components/chat";
- 
+import { LLMChat } from "@/components/chat"; 
 
 export default function Home() { 
   return (
     <div>
-      <main className=" "> 
-        <Chat />
+      <main>  
+        <LLMChat /> 
       </main> 
     </div>
   );
